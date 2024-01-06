@@ -1,0 +1,71 @@
+substitutions:
+  name: Orange
+
+esphome:
+  name: orange
+  friendly_name: $name
+  platformio_options:
+    upload_speed: 115200
+
+esp32:
+  board: esp32doit-devkit-v1
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_FREERTOS_UNICORE: y
+    advanced:
+      ignore_efuse_mac_crc: true
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+
+api:
+
+ota:
+
+logger:
+
+output:
+  - platform: ledc
+    pin: GPIO19
+    id: output_warm
+    power_supply: power
+    max_power: 0.50
+  - platform: ledc
+    pin: GPIO21
+    id: output_cold
+    power_supply: power
+    max_power: 0.96
+  - platform: ledc
+    pin: GPIO23
+    id: output_nightlight
+    power_supply: power
+
+power_supply:
+  - id: power
+    pin: GPIO22
+    enable_time: 0s
+    keep_on_time: 2s
+
+light:
+  - platform: monochromatic
+    name: "${name} Night Light"
+    id: night_light
+    output: output_nightlight
+    default_transition_length: 200ms
+    on_turn_on:
+      - light.turn_off: ceiling_light
+
+  - platform: cwww
+    name: "${name} Ceiling Light"
+    id: ceiling_light
+    cold_white: output_cold
+    warm_white: output_warm
+    cold_white_color_temperature: 6500 K
+    warm_white_color_temperature: 2400 K
+    constant_brightness: true
+    default_transition_length: 500ms
+    on_turn_on:
+      - light.turn_off: night_light
