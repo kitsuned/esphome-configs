@@ -66,9 +66,9 @@ class Miio : public Component, public uart::UARTDevice {
   void process_result_(const std::vector<std::string>& tokens);
   void process_down_request_();
   void apply_property_(const prop_t prop, const std::string value);
-  optional<prop_t> parse_property_specifier(const std::string cluster, const std::string key);
-  optional<MiioPropertyValue> parse_property(const MiioPropertyType type, const std::string value);
-  const char *get_serialized_network_state_();
+  optional<prop_t> parse_property_specifier_(const std::string cluster, const std::string key);
+  optional<MiioPropertyValue> parse_property_value_(const MiioPropertyType type, const std::string value);
+  const char *get_network_state_();
   void mcu_reply_(std::string message);
   void mcu_reply_(const char *message);
   void mcu_reply_ok_();

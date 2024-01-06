@@ -35,7 +35,7 @@ void Miio::setup() {
   };
 
   this->mcu_handlers_["net"] = [this](const std::vector<std::string> tokens) {
-    this->mcu_reply_(this->get_serialized_network_state_());
+    this->mcu_reply_(this->get_network_state_());
   };
 
   this->mcu_handlers_["time"] = [this](const std::vector<std::string> tokens) {
@@ -135,7 +135,7 @@ void Miio::process_properties_change_(const std::vector<std::string>& tokens) {
   }
 
   for (size_t i = 0; i < tokens.size(); i += 3) {
-    auto maybe_prop = this->parse_property_specifier(tokens[i], tokens[i + 1]);
+    auto maybe_prop = this->parse_property_specifier_(tokens[i], tokens[i + 1]);
 
     if (!maybe_prop.has_value()) {
       continue;
@@ -158,17 +158,17 @@ void Miio::process_result_(const std::vector<std::string>& tokens) {
   this->awaiting_for_get_properties_result_ = false;
 
   for (size_t i = 0; i < tokens.size(); i += 4) {
-    auto maybe_prop = this->parse_property_specifier(tokens[i], tokens[i + 1]);
+    auto maybe_prop = this->parse_property_specifier_(tokens[i], tokens[i + 1]);
 
     if (!maybe_prop.has_value()) {
       continue;
     }
 
     auto prop = maybe_prop.value();
-    auto result = parse_number<uint8_t>(tokens[i + 2]).value();
+    auto maybe_result = parse_number<uint8_t>(tokens[i + 2]);
 
-    if (result != 0) {
-      ESP_LOGW(TAG, "Non-zero result code of property %s: %u", stringify_prop(prop).c_str(), result);
+    if (!maybe_result.has_value() || maybe_result.value() != 0) {
+      ESP_LOGW(TAG, "Non-zero result code of property %s: %u", stringify_prop(prop).c_str(), maybe_result.value());
       continue;
     }
 
@@ -219,16 +219,16 @@ void Miio::apply_property_(const prop_t prop, const std::string value) {
   auto excepted_type = std::get<0>(it->second);
   auto callback = std::get<1>(it->second);
 
-  auto parsed = this->parse_property(excepted_type, value);
+  auto maybe_value = this->parse_property_value_(excepted_type, value);
 
-  if (parsed.has_value()) {
-    callback(parsed.value());
+  if (maybe_value.has_value()) {
+    callback(maybe_value.value());
   } else {
     ESP_LOGW(TAG, "Failed to parse property %s value: %s", stringify_prop(prop).c_str(), value.c_str());
   }
 }
 
-optional<prop_t> Miio::parse_property_specifier(const std::string cluster, const std::string key) {
+optional<prop_t> Miio::parse_property_specifier_(const std::string cluster, const std::string key) {
   auto maybe_cluster = parse_number<uint8_t>(cluster);
   auto maybe_key = parse_number<uint8_t>(key);
 
@@ -239,7 +239,7 @@ optional<prop_t> Miio::parse_property_specifier(const std::string cluster, const
   return {};
 }
 
-optional<MiioPropertyValue> Miio::parse_property(const MiioPropertyType type, const std::string value) {
+optional<MiioPropertyValue> Miio::parse_property_value_(const MiioPropertyType type, const std::string value) {
   MiioPropertyValue p = { .type = type, .value = value, .value_bool = false };
 
   switch (type) {
@@ -274,7 +274,7 @@ optional<MiioPropertyValue> Miio::parse_property(const MiioPropertyType type, co
   return {};
 }
 
-const char *Miio::get_serialized_network_state_() {
+const char *Miio::get_network_state_() {
   if (!network::is_connected()) {
     return "offline";
   }
