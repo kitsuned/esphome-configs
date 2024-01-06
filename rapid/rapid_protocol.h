@@ -115,8 +115,8 @@ namespace esphome
       RapidData data_;
     };
 
-    using RapidTrigger = RemoteReceiverTrigger<RapidProtocol, RapidData>;
-    using RapidDumper = RemoteReceiverDumper<RapidProtocol, RapidData>;
+    using RapidTrigger = RemoteReceiverTrigger<RapidData>;
+    using RapidDumper = RemoteReceiverDumper<RapidData>;
 
     template <typename... Ts>
     class RapidAction : public RemoteTransmitterActionBase<Ts...>
