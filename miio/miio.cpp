@@ -312,5 +312,5 @@ void Miio::handle_char_(uint8_t c) {
   }
 }
 
-}
-}
+}  // namespace miio
+}  // namespace esphome

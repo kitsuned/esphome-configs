@@ -38,11 +38,6 @@ struct MiioPropertyValue {
   };
 };
 
-struct MiioCommand {
-  MiioPropertyType cmd;
-  std::vector<uint8_t> payload;
-};
-
 struct MiioPropertyHash {
   std::size_t operator()(const std::tuple<uint8_t, uint8_t>& t) const {
     auto a = std::get<0>(t);
@@ -65,10 +60,6 @@ class Miio : public Component, public uart::UARTDevice {
 
  protected:
   void handle_char_(uint8_t c);
-//   void handle_properties_(const uint8_t *buffer, size_t len);
-//   optional<MiioProperty> get_property_(prop_t property_key);
-
-//   void send_raw_command_(MiioCommand command);
   void process_command_queue_();
   void process_command_raw_(const std::vector<std::string>& tokens);
   void process_properties_change_(const std::vector<std::string>& tokens);
@@ -82,11 +73,7 @@ class Miio : public Component, public uart::UARTDevice {
   void mcu_reply_(const char *message);
   void mcu_reply_ok_();
 
-  bool init_failed_{false};
   bool awaiting_for_get_properties_result_{false};
-  int init_retries_{0};
-  uint32_t last_command_timestamp_ = 0;
-  uint32_t last_rx_char_timestamp_ = 0;
   std::string product_ = "";
 #ifdef USE_TIME
   optional<time::RealTimeClock *> time_id_{};
@@ -95,7 +82,7 @@ class Miio : public Component, public uart::UARTDevice {
     prop_t,
     std::tuple<
       MiioPropertyType, 
-      std::function<void(MiioPropertyValue)>
+      std::function<void(const MiioPropertyValue)>
     >,
     MiioPropertyHash
   > listeners_;
