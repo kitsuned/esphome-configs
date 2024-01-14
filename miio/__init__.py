@@ -9,18 +9,6 @@ DEPENDENCIES = ["uart"]
 miio_ns = cg.esphome_ns.namespace("miio")
 Miio = miio_ns.class_("Miio", cg.Component, uart.UARTDevice)
 
-PTYPE_BOOL = "bool"
-PTYPE_INT = "int"
-PTYPE_FLOAT = "float"
-PTYPE_ENUM = "enum"
-
-PROP_TYPES = {
-    PTYPE_BOOL: cg.bool_,
-    PTYPE_INT: cg.int_,
-    PTYPE_FLOAT: cg.float_,
-    PTYPE_ENUM: cg.uint8,
-}
-
 CONF_MIIO_ID = "miio_id"
 CONF_PROPERTY_CLUSTER = "cluster"
 CONF_PROPERTY_KEY = "key"
