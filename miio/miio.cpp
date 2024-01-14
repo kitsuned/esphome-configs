@@ -94,7 +94,7 @@ void Miio::set_property(prop_t property, std::string value) {
 }
 
 void Miio::process_command_queue_() {
-  while (!this->mcu_message_queue_.empty()) {
+  if (!this->mcu_message_queue_.empty()) {
     auto tokens = this->mcu_message_queue_.front();
 
     this->process_command_raw_(tokens);
