@@ -52,7 +52,7 @@ class Miio : public Component, public uart::UARTDevice {
   void setup() override;
   void loop() override;
 //   void dump_config() override;
-  void register_listener(prop_t property, MiioPropertyType type, const std::function<void(MiioPropertyValue)> &func);
+  void register_listener(prop_t property, MiioPropertyType type, const std::function<void(MiioPropertyValue)>& fn);
   void set_property(prop_t property, std::string value);
 #ifdef USE_TIME
   void set_time_id(time::RealTimeClock *time_id) { this->time_id_ = time_id; }

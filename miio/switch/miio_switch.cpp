@@ -7,8 +7,8 @@ namespace miio {
 static const char *const TAG = "miio.switch";
 
 void MiioSwitch::setup() {
-  this->parent_->register_listener(this->switch_id_, MiioPropertyType::BOOLEAN, [this](const MiioPropertyValue &datapoint) {
-    this->publish_state(datapoint.value_bool);
+  this->parent_->register_listener(this->switch_id_, MiioPropertyType::BOOLEAN, [this](const MiioPropertyValue& value) {
+    this->publish_state(value.value_bool);
   });
 }
 

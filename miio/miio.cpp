@@ -84,9 +84,9 @@ void Miio::loop() {
   this->process_command_queue_();
 }
 
-void Miio::register_listener(prop_t property, MiioPropertyType type, const std::function<void(MiioPropertyValue)> &func) {
+void Miio::register_listener(prop_t property, MiioPropertyType type, const std::function<void(MiioPropertyValue)>& fn) {
   this->mcu_query_.insert(property);
-  this->listeners_[property] = std::make_tuple(type, func);
+  this->listeners_[property] = std::make_tuple(type, fn);
 }
 
 void Miio::set_property(prop_t property, std::string value) {
@@ -113,8 +113,7 @@ void Miio::process_command_raw_(const std::vector<std::string>& tokens) {
 #ifdef ESPHOME_LOG_HAS_VERY_VERBOSE
     std::string accumulator = "RX";
 
-    for (auto &token : tokens)
-    {
+    for (const auto& token : tokens) {
       accumulator += " ";
       accumulator += token;
     }
@@ -137,11 +136,9 @@ void Miio::process_properties_change_(const std::vector<std::string>& tokens) {
   for (size_t i = 0; i < tokens.size(); i += 3) {
     auto maybe_prop = this->parse_property_specifier_(tokens[i], tokens[i + 1]);
 
-    if (!maybe_prop.has_value()) {
-      continue;
+    if (maybe_prop.has_value()) {
+      this->apply_property_(maybe_prop.value(), tokens[i + 2]);
     }
-
-    this->apply_property_(maybe_prop.value(), tokens[i + 2]);
   }
 }
 
@@ -168,7 +165,7 @@ void Miio::process_result_(const std::vector<std::string>& tokens) {
     auto maybe_result = parse_number<uint8_t>(tokens[i + 2]);
 
     if (!maybe_result.has_value() || maybe_result.value() != 0) {
-      ESP_LOGW(TAG, "Non-zero result code of property %s: %u", stringify_prop(prop).c_str(), maybe_result.value());
+      ESP_LOGW(TAG, "Non-zero result code of property %s: %s", stringify_prop(prop).c_str(), tokens[i + 2].c_str());
       continue;
     }
 

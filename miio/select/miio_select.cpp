@@ -7,7 +7,7 @@ namespace miio {
 static const char *const TAG = "miio.select";
 
 void MiioSelect::setup() {
-  this->parent_->register_listener(this->select_id_, MiioPropertyType::ENUM, [this](const MiioPropertyValue &value) {
+  this->parent_->register_listener(this->select_id_, MiioPropertyType::ENUM, [this](const MiioPropertyValue& value) {
     auto enum_value = value.value_enum;
 
     auto options = this->traits.get_options();
@@ -30,7 +30,7 @@ void MiioSelect::setup() {
   });
 }
 
-void MiioSelect::control(const std::string &value) {
+void MiioSelect::control(const std::string& value) {
   if (this->optimistic_) {
     this->publish_state(value);
   }

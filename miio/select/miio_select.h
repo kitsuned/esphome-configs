@@ -20,7 +20,7 @@ class MiioSelect : public select::Select, public Component {
   void set_select_mappings(std::vector<uint8_t> mappings) { this->mappings_ = std::move(mappings); }
 
  protected:
-  void control(const std::string &value) override;
+  void control(const std::string& value) override;
 
   Miio *parent_;
   bool optimistic_ = false;

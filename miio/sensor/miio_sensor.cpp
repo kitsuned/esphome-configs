@@ -9,7 +9,7 @@ namespace miio {
 static const char *const TAG = "miio.sensor";
 
 void MiioSensor::setup() {
-  this->parent_->register_listener(this->sensor_id_, MiioPropertyType::NUMBER, [this](const MiioPropertyValue &value) {
+  this->parent_->register_listener(this->sensor_id_, MiioPropertyType::NUMBER, [this](const MiioPropertyValue& value) {
     this->publish_state(value.value_numeric);
   });
 }
