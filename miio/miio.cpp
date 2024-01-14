@@ -15,7 +15,6 @@ std::string stringify_prop(prop_t property) {
 }
 
 void Miio::setup() {
-  // drop all collected bytes
   while (this->available()) {
     this->read();
   }
@@ -27,9 +26,7 @@ void Miio::setup() {
   };
 
   this->mcu_handlers_["model"] = [this](const std::vector<std::string> tokens) {
-    this->product_ = tokens.front();
-
-    ESP_LOGI(TAG, "Hardware is %s", this->product_.c_str());
+    ESP_LOGI(TAG, "Product is %s", tokens.front().c_str());
 
     this->mcu_reply_ok_();
   };
@@ -82,6 +79,11 @@ void Miio::loop() {
   }
 
   this->process_command_queue_();
+}
+
+void Miio::dump_config() {
+  ESP_LOGCONFIG(TAG, "MIIO:");
+  this->check_uart_settings(115200);
 }
 
 void Miio::register_listener(prop_t property, MiioPropertyType type, const std::function<void(MiioPropertyValue)>& fn) {

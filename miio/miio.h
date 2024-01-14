@@ -51,7 +51,7 @@ class Miio : public Component, public uart::UARTDevice {
   float get_setup_priority() const override { return setup_priority::LATE; }
   void setup() override;
   void loop() override;
-//   void dump_config() override;
+  void dump_config() override;
   void register_listener(prop_t property, MiioPropertyType type, const std::function<void(MiioPropertyValue)>& fn);
   void set_property(prop_t property, std::string value);
 #ifdef USE_TIME
@@ -74,14 +74,13 @@ class Miio : public Component, public uart::UARTDevice {
   void mcu_reply_ok_();
 
   bool awaiting_for_get_properties_result_{false};
-  std::string product_ = "";
 #ifdef USE_TIME
   optional<time::RealTimeClock *> time_id_{};
 #endif
   std::unordered_map<
     prop_t,
     std::tuple<
-      MiioPropertyType, 
+      MiioPropertyType,
       std::function<void(const MiioPropertyValue)>
     >,
     MiioPropertyHash
