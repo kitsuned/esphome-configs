@@ -302,8 +302,7 @@ void Miio::handle_char_(uint8_t c) {
   if (c == ' ') {
     this->rx_message_.emplace_back();
   } else if (c == '\r') {
-    this->mcu_message_queue_.push_back(this->rx_message_);
-    this->rx_message_.clear();
+    this->mcu_message_queue_.push_back(std::move(this->rx_message_));
   } else {
     this->rx_message_.back() += c;
   }
