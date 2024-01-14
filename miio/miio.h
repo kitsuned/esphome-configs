@@ -20,7 +20,7 @@
 namespace esphome {
 namespace miio {
 
-typedef std::tuple<uint8_t, uint8_t> prop_t;
+using prop_t = std::tuple<uint8_t, uint8_t>;
 
 enum class MiioPropertyType : uint8_t {
   BOOLEAN = 0x01,
